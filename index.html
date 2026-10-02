@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Restoration Druid in WoW Forever: community feedback</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,800;1,500&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --moss: #fdfbf7;        /* Soft cream page background */
+    --paper: #ffffff;       /* Pure white card background */
+    --ink: #1c1d1f;         /* Deep modern off-black body text */
+    --ink-soft: #636b75;    /* Subtitle and hint text */
+    --line: #e2ded7;        /* Subtle warm cream borders */
+    --bloom: #d946ef;       /* Vibrant modern accent */
+    --bloom-soft: #fdf2f8;  /* Subtle pill hover / accent tint */
+    --leaf: #16a34a;        /* Modern fresh green accent */
+    --leaf-soft: #f0fdf4;  /* Selected option background */
+    --serif: "Alegreya", Georgia, serif;
+    --sans: "Source Sans 3", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  button,
+  label,
+  .scale span,
+  .chips span,
+  .rank li {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+  body { margin: 0; background: var(--moss); color: var(--ink); font: 400 17px/1.55 var(--sans); }
+  main {
+    max-width: 680px;
+    margin: 40px auto 80px;
+    padding: 40px;
+    background: #f7f3ed;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Header Flex Layout (Option 2) */
+  .header-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+  .header-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+  h1 { font: 800 clamp(1.8rem, 5vw, 2.5rem)/1.1 var(--serif); margin: 0; letter-spacing: -0.01em; }
+  .lede { color: var(--ink-soft); margin: 0 0 36px; max-width: 54ch; }
+  .demo { background: var(--bloom-soft); border: 1.5px solid var(--bloom); border-radius: 10px; padding: 10px 14px; margin-bottom: 24px; font-size: 0.95rem; }
+
+  .sec { margin: 0 0 40px; padding: 4px 0 0 18px; border-left: 4px solid var(--leaf); }
+  .sec > h2 { font: 800 1.75rem/1.1 var(--serif); margin: 0 0 4px; }
+  .sec > .sub { color: var(--ink-soft); margin: 0 0 20px; font-size: 0.95rem; }
+  .sec > h2:last-child { margin-bottom: 20px; }
+
+  fieldset { border: 0; padding: 0; margin: 0 0 28px; min-width: 0; }
+  legend { font: 500 1.25rem/1.25 var(--serif); padding: 0; margin-bottom: 4px; }
+  .req { font: 600 0.8rem var(--sans); color: var(--bloom); margin-left: 8px; }
+  .hint { color: var(--ink-soft); font-size: 0.93rem; margin: 0 0 10px; }
+
+  .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .scale label, .chips label { cursor: pointer; }
+  .scale input, .chips input { position: absolute; opacity: 0; pointer-events: none; }
+  .scale span { display: block; text-align: center; padding: 14px 4px; background: var(--paper); border: 1.5px solid var(--line); border-radius: 10px; font-weight: 600; font-size: 0.95rem; }
+  .scale input:checked + span { 
+    background: var(--leaf); 
+    border-color: var(--leaf); 
+    color: #fff; 
+  }
+  .chips span { display: inline-block; padding: 8px 14px; background: var(--paper); border: 1.5px solid var(--line); border-radius: 999px; font-size: 0.95rem; }
+  .chips input:checked + span { background: var(--leaf-soft); border-color: var(--leaf); }
+  .scale input:focus-visible + span, .chips input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+  /* Talent Grid & Tooltip Styling */
+  .talent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 10px;
+  }
+  .talent-option {
+    position: relative;
+    cursor: pointer;
+  }
+  .talent-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .talent-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    transition: all 0.15s ease;
+  }
+  .talent-option:hover .talent-card {
+    border-color: var(--ink);
+  }
+  .talent-option input:checked + .talent-card {
+    background: var(--leaf-soft);
+    border-color: var(--leaf);
+  }
+  .talent-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .talent-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+    line-height: 1.2;
+  }
+  .talent-option .tooltip {
+    visibility: hidden;
+    opacity: 0;
+    width: 240px;
+    background-color: var(--ink);
+    color: #fff;
+    text-align: left;
+    border-radius: 8px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 100;
+    bottom: 115%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.82rem;
+    line-height: 1.35;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+  }
+  .talent-option .tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--ink) transparent transparent transparent;
+  }
+  /* Show Tooltip strictly on mouse hover */
+  .talent-option:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .rank { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .rank li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 10px;
+    cursor: grab;
+  }
+
+  .rank li:active { cursor: grabbing; }
+
+  .rank li.drag {
+    border-color: var(--bloom);
+    box-shadow: 0 6px 18px rgba(23,48,31,0.25);
+  }
+
+  .rank .mv {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--line);
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .rank .mv:hover { border-color: var(--ink); }
+  .rank .pos { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: #fff; font-weight: 600; font-size: 0.9rem; display: grid; place-items: center; }
+  .rank .lbl { flex: 1; font-size: 0.97rem; }
+  .rank .grip { flex: none; cursor: grab; touch-action: none; user-select: none; padding: 6px 8px; color: var(--ink-soft); font-size: 1.1rem; line-height: 1; letter-spacing: -2px; }
+
+  textarea { width: 100%; font: inherit; color: inherit; background: var(--paper); border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; min-height: 120px; resize: vertical; }
+  textarea:focus { outline: 3px solid var(--ink); outline-offset: 1px; }
+  .count { text-align: right; font-size: 0.85rem; color: var(--ink-soft); }
+
+  button, .linkbtn { font: 600 1rem var(--sans); border: 0; border-radius: 10px; cursor: pointer; background: var(--ink); color: #fff; padding: 14px 26px; }
+  button:focus-visible { outline: 3px solid var(--bloom); outline-offset: 2px; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .linkbtn { background: none; color: var(--ink); text-decoration: underline; padding: 14px 8px; }
+  .actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .hp { position: absolute; left: -9999px; }
+  #msg { color: #9b1c1c; margin-top: 12px; min-height: 1.4em; }
+
+  #results { display: none; }
+  #results h2.big { font: 800 2rem var(--serif); margin: 0 0 4px; }
+  .q { margin: 0 0 24px; }
+  .q h4 { font: 500 1.1rem/1.3 var(--serif); margin: 0 0 2px; }
+  .q .n { color: var(--ink-soft); font-size: 0.85rem; margin: 0 0 8px; }
+  .bar { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; margin: 8px 0; font-size: 0.95rem; }
+  .bar b { font-weight: 600; text-align: right; }
+  .track { grid-column: 1 / -1; background: var(--paper); border-radius: 6px; height: 12px; overflow: hidden; }
+  .fill { 
+    height: 100%; 
+    width: 0; 
+    background: var(--leaf);
+    border-radius: 6px; 
+    transition: width 0.5s ease; 
+  }
+  .fill.leaf { background: var(--leaf); }
+
+  @media (max-width: 520px) { main { padding: 20px; } .scale { grid-template-columns: 1fr; } .sec { padding-left: 14px; } }
+  @media (prefers-reduced-motion: reduce) { .fill { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="header-container">
+    <img src="https://wow.zamimg.com/images/wow/icons/large/spell_nature_healingtouch.jpg" alt="Restoration Druid Icon" class="header-icon">
+    <h1>How does the new Restoration Druid feel?</h1>
+  </div>
+  <p class="lede">An anonymous community poll on the Restoration Druid design in WoW Forever. It should take only a minute or two to complete.</p>
+  <div class="demo" id="demoBanner" hidden>Demo mode: nothing is sent anywhere, and the results you'll see are made up.</div>
+
+  <form id="poll" novalidate>
+    <div class="actions" id="actions">
+      <button type="submit" id="submit">Submit my vote</button>
+      <button type="button" class="linkbtn" id="peek">See results without voting</button>
+    </div>
+    <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div id="msg" role="alert"></div>
+  </form>
+
+  <section id="results" aria-live="polite"></section>
+</main>
+
+<script>
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbza9eucP7ko3yLxkzxqMbjKofAT_VHRVfSutB7I2eBVtHz8W_dm_Z7UXq9jiLkT7g2a/exec";
+
+const FOCUS_AREAS = ["General Feel", "Utility", "Mana Management", "Raid Healing", "5-Man Healing",
+  "Unique Spec Identity", "Build/Talent Options", "Cooldown Options", "Mobility", "Hybrid Gameplay", "Raid Buffs"];
+
+const TALENTS = [
+  { id: "subtlety", name: "Subtlety", icon: "https://wow.zamimg.com/images/wow/icons/large/ability_eyeoftheowl.jpg", text: "Reduces the threat generated by your Nature and Arcane spells by 10/20/30%." },
+  { id: "reflection", name: "Reflection", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_frost_windwalkon.jpg", text: "Allows 17/33/50% of your Mana regeneration to continue while casting." },
+  { id: "gift_of_nature", name: "Gift of Nature", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_nature_protectionformnature.jpg", text: "Increases the effect of all your healing spells by 2/4/6/8/10%." },
+  { id: "gift_earthmother", name: "Gift of the Earthmother", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_nature_spiritarmor.jpg", text: "Reduces the global cooldown by 0.5s on your Rejuvenation, Swiftmend, and Wild Growth spells." },
+  { id: "tranquil_spirit", name: "Tranquil Spirit", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_holy_elunesgrace.jpg", text: "Reduces the mana cost of your Healing Touch and Tranquility spells by 2/4/6/8/10%." },
+  { id: "swiftmend", name: "Swiftmend", icon: "https://wow.zamimg.com/images/wow/icons/large/inv_relics_idolofrejuvenation.jpg", text: "Instantly heals a target with an active Rejuvenation or Regrowth effect for an amount equal to the full duration of the periodic effect of one of those spells." },
+  { id: "natures_swiftness", name: "Nature's Swiftness", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_nature_ravenform.jpg", text: "When activated, your next Nature spell becomes an instant cast spell." },
+  { id: "imp_tranquility", name: "Improved Tranquility", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_nature_tranquility.jpg", text: "Reduces threat caused by Tranquility by 50/100% and its cooldown by 30/60%." },
+  { id: "imp_regrowth", name: "Improved Regrowth", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_nature_resistnature.jpg", text: "Increases the critical effect chance of your Regrowth spell by 2/4/6/8/10%." },
+  { id: "wild_growth", name: "Wild Growth", icon: "https://wow.zamimg.com/images/wow/icons/large/ability_druid_flourish.jpg", text: "Heals the target and their party over 7 sec. The amount healed is applied quickly at first, and slows down as Wild Growth reaches its full duration." },
+  { id: "heart_of_wild", name: "Heart of the Wild", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_holy_blessingofagility.jpg", text: "Increases your Intellect by 2/4/6/8/10%. In addition, while in Bear Form or Dire Bear Form your Stamina is increased by 4/8/12/16/20% and whilst in Cat Form your Strength is increased by 2/4/6/8/10%." },
+  { id: "imp_wrath", name: "Improved Wrath", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_nature_abolishmagic.jpg", text: "Reduces the cast time of your Wrath spell by 0.1/0.2/0.3/0.4/0.5 sec and its Mana cost by 10/20/30/40/50%." },
+  { id: "genesis", name: "Genesis", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_arcane_arcane03.jpg", text: "Increases the periodic damage and healing done by your spells and abilities by 1/2/3/4/5%." },
+  { id: "moonglow", name: "Moonglow", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_nature_sentinal.jpg", text: "Reduces the Mana cost of your damaging spells by 8/17/25%." },
+  { id: "natures_splendor", name: "Nature's Splendor", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_nature_natureresistancetotem.jpg", text: "Increases the duration of your Moonfire and Rejuvenation spells by 3 sec, your Regrowth spell by 6 sec, and your Insect Swarm spell by 2 sec." },
+  { id: "insect_swarm", name: "Insect Swarm", icon: "https://wow.zamimg.com/images/wow/icons/large/spell_nature_insectswarm.jpg", text: "The enemy target is swarmed by insects, decreasing their chance to hit with attacks by 2% and causing 48 Nature damage over 12 sec." }
+];
+
+// type: single | scale | multi | rank | text | talents. Ids must match FIELDS in Code.gs.
+const SECTIONS = [
+  { title: "About you", questions: [
+    { id: "experience", type: "single", text: "How would you describe your experience as a Restoration Druid player?",
+      options: ["New to the spec", "Casual", "Experienced", "Minmaxer"] },
+    { id: "expansions", type: "multi", text: "During which expansions have you played Resto Druid?", hint: "Check all that apply.",
+      options: ["None", "Vanilla", "SoD", "TBC", "WotLK", "Cata", "MoP", "Anything after 2014"], exclusive: "None" },
+    { id: "content", type: "single", text: "What type of content do you mostly participate in?",
+      options: ["PvE", "PvP", "Open World"] }
+  ]},
+  { title: "The current beta build", sub: "Build 1.60.1.70170", questions: [
+    { id: "logged_in", type: "single", text: "Have you logged in and played on the current beta build?",
+      options: ["Yes", "No"] },
+    { id: "sentiment", type: "scale", text: "Overall, what are your thoughts on Resto Druid on the current beta build?",
+      options: ["Love it", "Like it", "Mixed", "Dislike it", "Hate it"] },
+    { id: "tools", type: "single", text: "Do you feel that you have been given adequate healing & utility tools for the proposed content?",
+      options: ["Yes", "No", "Unsure/Not enough information"] },
+    { id: "focus", type: "multi", sort: true, text: "What, if anything, would you like to see more of a focus on before the game goes live?",
+      hint: "Check all that apply.", options: FOCUS_AREAS },
+    { id: "unsure", type: "multi", sort: true, text: "Is there anything about the current Resto Druid design that you're unsure about?",
+      hint: "Check all that apply.",
+      options: ["Spell/Talent Interactions (Unclear Tooltips)", "Mana Management", "Reasons to bring over other Druid specs",
+        "How gear works", "Downranking", "Nothing, it's all clear to me"],
+      exclusive: "Nothing, it's all clear to me" },
+    { id: "expected_talents", type: "talents", text: "Are there any talents you're NOT expecting to use when Forever goes live?", hint: "Select any talents that you plan or expect to skip in your builds. Hover to view tooltips.",
+      talents: TALENTS },
+    { id: "ui_tracking", type: "single", text: "Do you find tracking active HoTs and spell procs intuitive with the baseline UI, or does it require external addons?",
+      options: ["Fine baseline", "Requires basic UI tweaks", "Unplayable without external addon support"] }
+  ]},
+  { title: "Playstyle", questions: [
+    { id: "enjoy", type: "multi", sort: true, text: "What do you historically enjoy most about Restoration Druid as a spec?",
+      hint: "Check all that apply.", options: FOCUS_AREAS },
+    { id: "playstyles", type: "rank", text: "Rank these historical playstyles by enjoyment",
+      hint: "Drag the handle or use the arrows. Top is the one you enjoy most.",
+      items: [
+        { id: "rank_lifebloom", label: "Lifebloom / HoT upkeep (TBC)" },
+        { id: "rank_rot", label: "Consistent healing requirements during rot fights (e.g. Sapphiron)" },
+        { id: "rank_regrowth", label: "Fast-paced Regrowth healing" },
+        { id: "rank_healingtouch", label: "Healing Touch consistent single-target healing" },
+        { id: "rank_blanket", label: "Proactive blanketing before incoming damage" },
+        { id: "rank_ramp", label: "A more complex 'ramp' profile" }
+      ] },
+    { id: "dps", type: "single", text: "Do you enjoy DPSing during periods of low healing?",
+      options: ["Yes", "No", "Unsure"] }
+  ]},
+  { title: "Raiding", questions: [
+    { id: "slot", type: "single", text: "Do you have any worries about finding a raid slot?",
+      options: ["Yes", "No", "Unsure"] },
+    { id: "offspec", type: "single", text: "Would you be willing to off-spec within your raid environments, if called upon?",
+      options: ["Yes", "No", "Unsure"] },
+    { id: "innervate", type: "single", text: "How do you feel about the decision between using Innervate on yourself versus coordinating it for other healers/DPS in raid content?",
+      options: ["Always use on self", "Always save for others", "Depends on encounter", "Feels frustrating to lose"] },
+    { id: "tranquility", type: "single", text: "Can you see yourself ever pressing Tranquility under its current implementation?",
+      options: ["In 5-man Content", "In Raids", "Very  Occasionally", "Never"] }
+  ]},
+  { title: "Anything else?", questions: [
+    { id: "txt_comment", type: "text", text: "Is there any other feedback you'd like to raise?", hint: "Optional. Comments are only seen by the poll's organizer." }
+  ]}
+];
+// ====================================
+
+const DEMO = new URLSearchParams(location.search).has("demo");
+const form = document.getElementById("poll");
+const msg = document.getElementById("msg");
+const actions = document.getElementById("actions");
+const rankState = {};   // question id -> { touched, list }
+
+function h(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  Object.assign(e, props || {});
+  kids.forEach(k => e.append(k));
+  return e;
+}
+
+/* ---------- form rendering ---------- */
+function renderQuestion(q) {
+  const fs = h("fieldset");
+  fs.dataset.qid = q.id;
+  const lg = h("legend", {}, q.text);
+  if (q.required) lg.append(h("span", { className: "req", textContent: "Required" }));
+  fs.append(lg);
+  if (q.hint) fs.append(h("p", { className: "hint", textContent: q.hint }));
+
+  if (q.type === "single" || q.type === "scale" || q.type === "multi") {
+    const multi = q.type === "multi";
+    const box = h("div", { className: q.type === "scale" ? "scale" : "chips" });
+    q.options.forEach(opt => {
+      const input = h("input", { type: multi ? "checkbox" : "radio", name: q.id, value: opt });
+      box.append(h("label", {}, input, h("span", { textContent: opt })));
+    });
+    if (multi && q.exclusive) {
+      box.addEventListener("change", e => {
+        if (!e.target.checked) return;
+        const boxes = box.querySelectorAll("input");
+        if (e.target.value === q.exclusive) boxes.forEach(b => { if (b !== e.target) b.checked = false; });
+        else boxes.forEach(b => { if (b.value === q.exclusive) b.checked = false; });
+      });
+    }
+    fs.append(box);
+  } else if (q.type === "talents") {
+    const box = h("div", { className: "talent-grid" });
+    q.talents.forEach(t => {
+      const input = h("input", { type: "checkbox", name: q.id, value: t.name });
+      const img = h("img", { src: t.icon, alt: t.name, className: "talent-icon" });
+      const name = h("span", { className: "talent-name", textContent: t.name });
+      const card = h("div", { className: "talent-card" }, img, name);
+      const tt = h("div", { className: "tooltip", textContent: t.text });
+      const lbl = h("label", { className: "talent-option" }, input, card, tt);
+      box.append(lbl);
+    });
+    fs.append(box);
+  } else if (q.type === "rank") {
+    fs.append(renderRank(q));
+  } else if (q.type === "text") {
+    const ta = h("textarea", { name: q.id, maxLength: 1000 });
+    const n = h("span", { textContent: "0" });
+    ta.addEventListener("input", () => { n.textContent = ta.value.length; });
+    fs.append(ta, h("div", { className: "count" }, n, "/1000"));
+  }
+  return fs;
+}
+
+function renderRank(q) {
+  const ol = h("ol", { className: "rank" });
+  const state = rankState[q.id] = { touched: false, list: ol };
+
+  const renumber = () => {
+    [...ol.children].forEach((li, i) => {
+      li.querySelector(".pos").textContent = i + 1;
+    });
+  };
+
+  const moved = () => {
+    state.touched = true;
+    renumber();
+  };
+
+  let dragged = null;
+
+  q.items.forEach(item => {
+    const li = h("li");
+    li.dataset.id = item.id;
+    li.draggable = true;
+
+    const grip = h("span", {
+      className: "grip",
+      textContent: "⋮⋮",
+      title: "Drag to reorder",
+      ariaLabel: "Drag to reorder"
+    });
+
+    const up = h("button", {
+      type: "button",
+      className: "mv",
+      textContent: "▲",
+      ariaLabel: "Move up: " + item.label
+    });
+
+    const down = h("button", {
+      type: "button",
+      className: "mv",
+      textContent: "▼",
+      ariaLabel: "Move down: " + item.label
+    });
+
+    up.addEventListener("click", e => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (li.previousElementSibling) {
+        ol.insertBefore(li, li.previousElementSibling);
+        moved();
+      }
+    });
+
+    down.addEventListener("click", e => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (li.nextElementSibling) {
+        ol.insertBefore(li.nextElementSibling, li);
+        moved();
+      }
+    });
+
+    li.addEventListener("dragstart", e => {
+      dragged = li;
+      li.classList.add("drag");
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", item.id);
+    });
+
+    li.addEventListener("dragend", () => {
+      li.classList.remove("drag");
+      dragged = null;
+    });
+
+    li.addEventListener("dragover", e => {
+      e.preventDefault();
+
+      if (!dragged || dragged === li) return;
+
+      const rect = li.getBoundingClientRect();
+      const after = e.clientY > rect.top + rect.height / 2;
+
+      if (after) {
+        ol.insertBefore(dragged, li.nextSibling);
+      } else {
+        ol.insertBefore(dragged, li);
+      }
+
+      moved();
+    });
+
+    li.append(
+      h("span", { className: "pos" }),
+      h("span", { className: "lbl", textContent: item.label }),
+      grip,
+      up,
+      down
+    );
+
+    ol.append(li);
+  });
+
+  renumber();
+  return ol;
+}
+
+SECTIONS.forEach(sec => {
+  const s = h("section", { className: "sec" });
+  s.append(h("h2", { textContent: sec.title }));
+  if (sec.sub) s.append(h("p", { className: "sub", textContent: sec.sub }));
+  sec.questions.forEach(q => s.append(renderQuestion(q)));
+  form.insertBefore(s, actions);
+});
+
+/* ---------- collecting answers ---------- */
+function collect() {
+  const a = {};
+  SECTIONS.forEach(sec => sec.questions.forEach(q => {
+    if (q.type === "single" || q.type === "scale") {
+      const c = form.querySelector('input[name="' + q.id + '"]:checked');
+      if (c) a[q.id] = c.value;
+    } else if (q.type === "multi" || q.type === "talents") {
+      const v = [...form.querySelectorAll('input[name="' + q.id + '"]:checked')].map(i => i.value);
+      if (v.length) a[q.id] = v;
+    } else if (q.type === "rank") {
+      [...rankState[q.id].list.children].forEach((li, i) => { a[li.dataset.id] = i + 1; });
+    } else if (q.type === "text") {
+      const t = form.elements[q.id].value.trim();
+      if (t) a[q.id] = t;
+    }
+  }));
+  return a;
+}
+
+/* ---------- results ---------- */
+function bar(label, valueText, pct, leaf) {
+  const fill = h("div", { className: "fill" + (leaf ? " leaf" : "") });
+  fill.dataset.w = Math.max(0, Math.min(100, pct)) + "%";
+  return h("div", { className: "bar" }, h("span", { textContent: label }), h("b", { textContent: valueText }), h("div", { className: "track" }, fill));
+}
+
+function demoData() {
+  const r = n => Math.floor(Math.random() * n);
+  const fields = {};
+  SECTIONS.forEach(sec => sec.questions.forEach(q => {
+    if (q.type === "text") return;
+    if (q.type === "rank") {
+      q.items.forEach(it => {
+        const counts = {}; let n = 0;
+        for (let p = 1; p <= q.items.length; p++) { const c = r(20); counts[p] = c; n += c; }
+        fields[it.id] = { n, counts };
+      });
+    } else if (q.type === "talents") {
+      const counts = {}; let n = 0;
+      q.talents.forEach(t => { const c = r(30) + 1; counts[t.name] = c; n += c; });
+      fields[q.id] = { n: Math.round(n / 3), counts };
+    } else {
+      const counts = {}; let n = 0;
+      q.options.forEach(o => { const c = r(40) + 1; counts[o] = c; n += c; });
+      if (q.type === "multi") n = Math.round(n / 3);
+      fields[q.id] = { n, counts };
+    }
+  }));
+  return { total: 64, fields };
+}
+
+function renderResults(d) {
+  const root = document.getElementById("results");
+  root.innerHTML = "";
+  root.append(h("h2", { className: "big", textContent: "Results" }),
+    h("p", { className: "hint", textContent: d.total + (d.total === 1 ? " response" : " responses") }));
+
+  SECTIONS.forEach(sec => {
+    const qs = sec.questions.filter(q => q.type !== "text");
+    if (!qs.length) return;
+    const s = h("section", { className: "sec" });
+    s.append(h("h2", { textContent: sec.title }));
+    if (sec.sub) s.append(h("p", { className: "sub", textContent: sec.sub }));
+
+    qs.forEach(q => {
+      const block = h("div", { className: "q" });
+      block.append(h("h4", { textContent: q.text }));
+
+      if (q.type === "rank") {
+        const rows = q.items.map(it => {
+          const f = d.fields[it.id] || { n: 0, counts: {} };
+          let sum = 0, n = 0;
+          Object.entries(f.counts).forEach(([pos, c]) => { sum += Number(pos) * c; n += c; });
+          return { label: it.label, n, avg: n ? sum / n : null };
+        });
+        block.append(h("p", { className: "n", textContent: "Average rank, 1 is most enjoyed" }));
+        rows.sort((x, y) => (x.avg ?? 99) - (y.avg ?? 99)).forEach(row => {
+          block.append(row.avg === null
+            ? bar(row.label, "no votes", 0, false)
+            : bar(row.label, row.avg.toFixed(1), ((q.items.length + 1 - row.avg) / q.items.length) * 100, true));
+        });
+      } else if (q.type === "talents") {
+        const f = d.fields[q.id] || { n: 0, counts: {} };
+        block.append(h("p", { className: "n", textContent: f.n + (f.n === 1 ? " answer" : " answers") }));
+        let opts = q.talents.map(t => t.name);
+        opts.sort((x, y) => (f.counts[y] || 0) - (f.counts[x] || 0));
+        opts.forEach(o => {
+          const c = f.counts[o] || 0;
+          const pct = f.n ? Math.round((c / f.n) * 100) : 0;
+          block.append(bar(o, pct + "%", pct, true));
+        });
+      } else {
+        const f = d.fields[q.id] || { n: 0, counts: {} };
+        block.append(h("p", { className: "n", textContent: f.n + (f.n === 1 ? " answer" : " answers") }));
+        let opts = q.options.slice();
+        if (q.sort) opts.sort((x, y) => (f.counts[y] || 0) - (f.counts[x] || 0));
+        opts.forEach(o => {
+          const c = f.counts[o] || 0;
+          const pct = f.n ? Math.round((c / f.n) * 100) : 0;
+          block.append(bar(o, pct + "%", pct, q.type !== "scale"));
+        });
+      }
+      s.append(block);
+    });
+    root.append(s);
+  });
+
+  form.style.display = "none";
+  root.style.display = "block";
+  root.scrollIntoView({ behavior: "smooth" });
+  requestAnimationFrame(() => root.querySelectorAll(".fill").forEach(f => { f.style.width = f.dataset.w; }));
+}
+
+async function loadResults() {
+  if (DEMO) return renderResults(demoData());
+  const res = await fetch(ENDPOINT);
+  renderResults(await res.json());
+}
+
+/* ---------- events ---------- */
+const hasVoted = () => { try { return localStorage.getItem("restoPollVotedV2") === "1"; } catch (e) { return false; } };
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  msg.textContent = "";
+  const answers = collect();
+  if (!answers.sentiment) {
+    msg.textContent = "Pick your overall rating of the current build before submitting.";
+    form.querySelector('[data-qid="sentiment"]').scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  if (!DEMO && hasVoted() && !confirm("This browser has already voted. Submit again?")) return;
+
+  const btn = document.getElementById("submit");
+  btn.disabled = true; btn.textContent = "Sending...";
+  try {
+    if (!DEMO) {
+      // text/plain avoids a CORS preflight, which Apps Script can't answer
+      const res = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ answers, website: form.elements.website.value }) });
+      const out = await res.json();
+      if (!out.ok) throw new Error(out.error || "Rejected");
+      try { localStorage.setItem("restoPollVotedV2", "1"); } catch (err) {}
+    }
+    await loadResults();
+  } catch (err) {
+    msg.textContent = "Your vote didn't go through. Check your connection and try again.";
+    btn.disabled = false; btn.textContent = "Submit my vote";
+  }
+});
+
+document.getElementById("peek").addEventListener("click", () => {
+  loadResults().catch(() => { msg.textContent = "Couldn't load results right now. Try again in a moment."; });
+});
+
+if (DEMO) document.getElementById("demoBanner").hidden = false;
+</script>
+</body>
+</html>
