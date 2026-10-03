@@ -422,7 +422,11 @@ function renderRank(q) {
 
   let dragged = null;
 
-  q.items.forEach(item => {
+  // 1. Create a shallow copy & shuffle the items array using Fisher-Yates
+  const shuffledItems = [...q.items].sort(() => Math.random() - 0.5);
+
+  // 2. Render items using the shuffled array
+  shuffledItems.forEach(item => {
     const li = h("li");
     li.dataset.id = item.id;
     li.draggable = true;
